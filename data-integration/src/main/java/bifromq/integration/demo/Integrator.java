@@ -1,6 +1,8 @@
 package bifromq.integration.demo;
 
 import io.reactivex.subjects.PublishSubject;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.mqtt.MqttClient;
 import io.vertx.mqtt.MqttClientOptions;
@@ -61,6 +63,11 @@ public class Integrator implements IIntegrator {
         closeClients().thenAccept(v -> {
             clients.clear();
             emitter.onComplete();
+            vertx.close().andThen(event -> {
+                if (event.failed()) {
+                    log.error("close vertx failed: ", event.cause());
+                }
+            });
         });
     }
 
