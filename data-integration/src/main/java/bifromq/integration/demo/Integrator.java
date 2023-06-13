@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 public class Integrator implements IIntegrator {
@@ -55,6 +56,14 @@ public class Integrator implements IIntegrator {
         return emitter;
     }
 
+    @Override
+    public void close() {
+        closeClients().thenAccept(v -> {
+            clients.clear();
+            emitter.onComplete();
+        });
+    }
+
     private void initClients() {
         for (int idx = 0; idx < clientNum; idx++) {
             MqttClientOptions options = getMqttClientOptions(idx);
@@ -67,11 +76,12 @@ public class Integrator implements IIntegrator {
                     client.subscribe(topicFilter, 1, event -> {
                         if (event.failed()) {
                             log.error("clientId: {} subscribe topicFilter: {} failed: ", event.cause());
+                        }else {
+                            clients.add(client);
                         }
                     });
                 }
             });
-            clients.add(client);
         }
     }
 
@@ -100,5 +110,28 @@ public class Integrator implements IIntegrator {
                 .payload(message.payload().getBytes())
                 .build();
         emitter.onNext(integratedMessage);
+    }
+
+    private CompletableFuture<Void> closeClients() {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        clients.forEach(client -> {
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            futures.add(future);
+            client.unsubscribe(topicFilter, unsubResult -> {
+                if (unsubResult.failed()) {
+                    log.error("clientId: {} unsubscribe topicFilter: {} failed: ",
+                            client.clientId(), topicFilter, unsubResult.cause());
+                }else {
+                    client.disconnect(disconnectResult -> {
+                        if (disconnectResult.failed()) {
+                            log.error("clientId: {} disconnect failed: ", client.clientId(), disconnectResult.cause());
+                        }else {
+                            future.complete(null);
+                        }
+                    });
+                }
+            });
+        });
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 }
