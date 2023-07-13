@@ -40,6 +40,11 @@
             <artifactId>rxjava</artifactId>
             <version>2.2.21</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.1.2</version>
+        </dependency>
     </dependencies>
 
 

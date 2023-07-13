@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Builder
+@Data
 public class IntegratedMessage {
     private byte[] payload;
     private String topic;

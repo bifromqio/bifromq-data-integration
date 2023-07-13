@@ -1,5 +1,10 @@
 package bifromq.integration.demo;
 
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
+
+import java.util.Properties;
+
 public class DemoMain {
     public static void main(String[] args) {
         IIntegrator integrator = Integrator.builder()
@@ -12,8 +17,16 @@ public class DemoMain {
                 .port(1883)
                 .host("BifroMQ host")
                 .build();
+
+        String bootstrapServers = "Kafka cluster";
+        Properties properties = new Properties();
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+
+        KafkaProducerExample producerExample = new KafkaProducerExample(properties);
         integrator.onMessageArrive()
-                .doOnComplete(IProducer.DUMMY::close)
-                .subscribe(IProducer.DUMMY::produce);
+                .doOnComplete(producerExample::close)
+                .subscribe(producerExample::produce);
     }
 }
