@@ -23,8 +23,8 @@ public class DemoMain {
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-
         KafkaProducerExample producerExample = new KafkaProducerExample(properties);
+
         integrator.onMessageArrive()
                 .doOnComplete(producerExample::close)
                 .subscribe(producerExample::produce);

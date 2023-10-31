@@ -105,7 +105,7 @@ public class Integrator implements IIntegrator {
                 .setAckTimeout(30)
                 .setCleanSession(cleanSession)
                 .setKeepAliveInterval(600)
-                .setMaxMessageSize(512)
+                .setMaxMessageSize(256 * 1024)
                 .setKeepAliveInterval(30);
         return options;
     }
