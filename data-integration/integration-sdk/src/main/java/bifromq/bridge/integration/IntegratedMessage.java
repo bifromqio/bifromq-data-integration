@@ -1,4 +1,4 @@
-package bifromq.integration.demo;
+package bifromq.bridge.integration;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,8 +1,6 @@
-package bifromq.integration.demo;
+package bifromq.bridge.integration;
 
-import io.reactivex.subjects.PublishSubject;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.vertx.core.Vertx;
 import io.vertx.mqtt.MqttClient;
 import io.vertx.mqtt.MqttClientOptions;
@@ -18,6 +16,8 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class Integrator implements IIntegrator {
     private int clientNum;
+    private int maxMessageSize;
+    private int inflightQueueSize;
     private String topicFilter;
     private String userName;
     private String password;
@@ -27,8 +27,11 @@ public class Integrator implements IIntegrator {
     private String clientPrefix;
     private Vertx vertx;
     private List<MqttClient> clients = new ArrayList<>();
+    private IProducer producer;
     private final PublishSubject<IntegratedMessage> emitter = PublishSubject.create();
     private final String DEFAULT_CLIENT_PREFIX = "data-integrator-";
+    private final int DEFAULT_INFLIGHT_QUEUE_SIZE = 100_000;
+    private final int DEFAULT_MAX_MESSAGE_SIZE = 256 * 1024;
 
     @Builder
     public Integrator(@NonNull String topicFilter,
@@ -39,8 +42,11 @@ public class Integrator implements IIntegrator {
                       @NonNull boolean cleanSession,
                       @NonNull String host,
                       @NonNull int port,
+                      @NonNull IProducer producer,
                       Vertx vertx,
-                      String clientPrefix) {
+                      String clientPrefix,
+                      Integer maxMessageSize,
+                      Integer inflightQueueSize) {
         this.topicFilter = getTopicFilter(groupName, topicFilter);
         this.userName = userName;
         this.password = password;
@@ -48,18 +54,23 @@ public class Integrator implements IIntegrator {
         this.cleanSession = cleanSession;
         this.host = host;
         this.port = port;
+        this.producer = producer;
         this.vertx = vertx == null ? Vertx.vertx() : vertx;
         this.clientPrefix = clientPrefix == null ? DEFAULT_CLIENT_PREFIX : clientPrefix;
+        this.maxMessageSize = maxMessageSize == null ? DEFAULT_MAX_MESSAGE_SIZE : maxMessageSize;
+        this.inflightQueueSize = inflightQueueSize == null ? DEFAULT_INFLIGHT_QUEUE_SIZE : inflightQueueSize;
         initClients();
     }
 
     @Override
-    public PublishSubject<IntegratedMessage> onMessageArrive() {
-        return emitter;
+    public void start() {
+        emitter.doOnComplete(producer::close)
+                .subscribe(producer::produce);
     }
 
     @Override
     public void close() {
+        producer.close();
         closeClients().thenAccept(v -> {
             clients.clear();
             emitter.onComplete();
@@ -101,11 +112,11 @@ public class Integrator implements IIntegrator {
                 .setClientId(clientPrefix + idx)
                 .setUsername(userName)
                 .setPassword(password)
-                .setMaxInflightQueue(1000)
                 .setAckTimeout(30)
                 .setCleanSession(cleanSession)
                 .setKeepAliveInterval(600)
-                .setMaxMessageSize(256 * 1024)
+                .setMaxMessageSize(maxMessageSize)
+                .setMaxInflightQueue(inflightQueueSize)
                 .setKeepAliveInterval(30);
         return options;
     }

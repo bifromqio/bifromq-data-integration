@@ -1,4 +1,4 @@
-package bifromq.integration.demo;
+package bifromq.bridge.integration;
 
 public interface IProducer {
     IProducer DUMMY = new IProducer() {

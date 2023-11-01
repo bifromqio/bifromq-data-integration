@@ -6,46 +6,82 @@
 
     <groupId>bifromq.integration</groupId>
     <artifactId>data-integration</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>build</module>
+        <module>integration-sdk</module>
+    </modules>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <!-- maven.plugin.version-->
+        <maven.compiler.plugin.version>3.10.1</maven.compiler.plugin.version>
+        <maven.assembly.plugin.version>3.4.1</maven.assembly.plugin.version>
+        <maven.resources.plugin.version>3.2.0</maven.resources.plugin.version>
+        <!-- build properties -->
+        <java.source.version>17</java.source.version>
+        <java.target.version>17</java.target.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- third party properties -->
+        <vertx.core.version>4.3.4</vertx.core.version>
+        <vertx.mqtt.version>4.3.4</vertx.mqtt.version>
+        <lombok.version>1.18.22</lombok.version>
+        <rxjava3.version>3.1.5</rxjava3.version>
+        <kafka.client.version>3.1.2</kafka.client.version>
+        <slf4j.api.version>1.7.36</slf4j.api.version>
+        <micrometer.registry.prometheus.version>1.11.1</micrometer.registry.prometheus.version>
+        <jackson.dataformat.yaml.version>2.15.2</jackson.dataformat.yaml.version>
+        <jackson.databind.version>2.15.2</jackson.databind.version>
+        <kafka.clients.version>3.1.2</kafka.clients.version>
+        <logback-classic.version>1.2.9</logback-classic.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>4.3.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-mqtt</artifactId>
-            <version>4.3.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.36</version>
-        </dependency>
-        <dependency>
-            <groupId>io.reactivex.rxjava2</groupId>
-            <artifactId>rxjava</artifactId>
-            <version>2.2.21</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>3.1.2</version>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>bifromq.integration</groupId>
+                <artifactId>data-integration</artifactId>
+                <version>${project.parent}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin.version}</version>
+                    <configuration>
+                        <source>${java.source.version}</source>
+                        <target>${java.target.version}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${maven.assembly.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${maven.resources.plugin.version}</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 
 </project>
