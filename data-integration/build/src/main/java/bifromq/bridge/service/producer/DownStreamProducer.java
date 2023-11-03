@@ -14,6 +14,7 @@ import java.util.Properties;
 @Slf4j
 public class DownStreamProducer implements IProducer {
     private final KafkaProducer<String, String> kafkaProducer;
+    private final String dummyTopic = "bridge/kafka";
 
     public DownStreamProducer(String bootstrapServers) {
         Properties properties = new Properties();
@@ -26,8 +27,7 @@ public class DownStreamProducer implements IProducer {
     public void produce(IntegratedMessage message) {
         try {
             ProducerRecord<String, String> record
-                    = new ProducerRecord<>(getCustomizedTopic(message.getTopic()),
-                    new String(message.getPayload(), StandardCharsets.UTF_8));
+                    = new ProducerRecord<>(dummyTopic, new String(message.getPayload(), StandardCharsets.UTF_8));
             kafkaProducer.send(record, (metadata, exception) -> {
                 if (exception != null) {
                     log.error("Error while producing", exception);

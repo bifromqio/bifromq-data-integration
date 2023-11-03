@@ -8,6 +8,9 @@ import bifromq.bridge.service.util.ConfigUtil;
 import com.sun.net.httpserver.HttpServer;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.binder.jvm.*;
+import io.micrometer.core.instrument.binder.logging.LogbackMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.prometheus.PrometheusConfig;
@@ -104,6 +107,15 @@ public class Starter {
     }
 
     private void buildPrometheus() {
+        new JvmInfoMetrics().bindTo(Metrics.globalRegistry);
+        new JvmMemoryMetrics().bindTo(Metrics.globalRegistry);
+        new JvmGcMetrics().bindTo(Metrics.globalRegistry);
+        new JvmHeapPressureMetrics().bindTo(Metrics.globalRegistry);
+        new JvmThreadMetrics().bindTo(Metrics.globalRegistry);
+        new ClassLoaderMetrics().bindTo(Metrics.globalRegistry);
+        new ProcessorMetrics().bindTo(Metrics.globalRegistry);
+        new LogbackMetrics().bindTo(Metrics.globalRegistry);
+
         this.registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         registry.config().meterFilter(new MeterFilter() {
             @Override
