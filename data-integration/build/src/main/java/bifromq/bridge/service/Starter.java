@@ -1,9 +1,9 @@
 package bifromq.bridge.service;
 
-import bifromq.bridge.integration.IProducer;
 import bifromq.bridge.integration.Integrator;
 import bifromq.bridge.service.config.BridgeConfig;
-import bifromq.bridge.service.producer.DownStreamProducer;
+import bifromq.bridge.service.config.IntegratorConfig;
+import bifromq.bridge.service.producer.ProducerFactory;
 import bifromq.bridge.service.util.ConfigUtil;
 import com.sun.net.httpserver.HttpServer;
 import io.micrometer.core.instrument.Meter;
@@ -15,7 +15,10 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.cli.*;
 
@@ -24,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class Starter {
@@ -50,7 +54,6 @@ public class Starter {
             Starter starter = new Starter();
             starter.buildIntegrator(bridgeConfig);
             starter.buildPrometheus();
-
             starter.start();
         }catch (Exception exception) {
             log.error("start failed: {}", exception);
@@ -74,7 +77,6 @@ public class Starter {
         serverThread.start();
         log.debug("Prometheus exporter started");
         integrator.start();
-        log.debug("integrator started");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> stop()));
     }
 
@@ -87,10 +89,14 @@ public class Starter {
     }
 
     private void buildIntegrator(BridgeConfig bridgeConfig) {
-        BridgeConfig.IntegratorConfig integratorConfig = bridgeConfig.getIntegratorConfig();
-        BridgeConfig.KafkaConfig kafkaConfig = bridgeConfig.getKafkaConfig();
+        IntegratorConfig integratorConfig = bridgeConfig.getIntegratorConfig();
+        VertxOptions vertxOptions = new VertxOptions();
+        vertxOptions.setEventLoopPoolSize(Runtime.getRuntime().availableProcessors() * 2);
+        vertxOptions.setWorkerPoolSize(Runtime.getRuntime().availableProcessors() * 2);
+        vertxOptions.setBlockedThreadCheckInterval(4);
+        vertxOptions.setBlockedThreadCheckIntervalUnit(TimeUnit.MINUTES);
         this.integrator = Integrator.builder()
-                .producer(buildProducer(kafkaConfig))
+                .producer(ProducerFactory.getProducer(bridgeConfig.getProducerConfig()))
                 .host(integratorConfig.getHost())
                 .port(integratorConfig.getPort())
                 .cleanSession(integratorConfig.isCleanSession())
@@ -99,11 +105,8 @@ public class Starter {
                 .topicFilter(integratorConfig.getTopicFilter())
                 .userName(integratorConfig.getUsername())
                 .password(integratorConfig.getPassword())
+                .vertx(Vertx.vertx(vertxOptions))
                 .build();
-    }
-
-    private IProducer buildProducer(BridgeConfig.KafkaConfig kafkaConfig) {
-        return new DownStreamProducer(kafkaConfig.getBootstrapServers());
     }
 
     private void buildPrometheus() {

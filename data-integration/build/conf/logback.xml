@@ -96,7 +96,7 @@
         </filter>
     </appender>
 
-    <logger name="bifromq.bridge" level="INFO" additivity="false">
+    <logger name="bifromq.bridge.*" level="INFO" additivity="false">
         <appender-ref ref="traceLogFile"/>
         <appender-ref ref="debugLogFile"/>
         <appender-ref ref="infoLogFile"/>
@@ -105,6 +105,10 @@
     </logger>
 
     <root level="INFO">
-        <appender-ref ref="stdout"/>
+        <appender-ref ref="traceLogFile"/>
+        <appender-ref ref="debugLogFile"/>
+        <appender-ref ref="infoLogFile"/>
+        <appender-ref ref="warnLogFile"/>
+        <appender-ref ref="errorLogFile"/>
     </root>
 </configuration>

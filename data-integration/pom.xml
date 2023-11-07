@@ -34,7 +34,9 @@
         <jackson.dataformat.yaml.version>2.15.2</jackson.dataformat.yaml.version>
         <jackson.databind.version>2.15.2</jackson.databind.version>
         <kafka.clients.version>3.1.2</kafka.clients.version>
-        <logback-classic.version>1.2.9</logback-classic.version>
+        <logback.classic.version>1.2.9</logback.classic.version>
+        <commons.cli.version>1.5.0</commons.cli.version>
+        <micrometer.core.version>1.11.1</micrometer.core.version>
     </properties>
 
     <dependencyManagement>

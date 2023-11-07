@@ -1,5 +1,6 @@
 package bifromq.bridge.integration;
 
+import io.netty.channel.EventLoop;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 import io.vertx.core.Vertx;
 import io.vertx.mqtt.MqttClient;
@@ -27,8 +28,8 @@ public class Integrator implements IIntegrator {
     private String clientPrefix;
     private Vertx vertx;
     private List<MqttClient> clients = new ArrayList<>();
-    private IProducer producer;
     private final PublishSubject<IntegratedMessage> emitter = PublishSubject.create();
+    private final IProducer delegator;
     private final String DEFAULT_CLIENT_PREFIX = "data-integrator-";
     private final int DEFAULT_INFLIGHT_QUEUE_SIZE = 100_000;
     private final int DEFAULT_MAX_MESSAGE_SIZE = 256 * 1024;
@@ -46,7 +47,8 @@ public class Integrator implements IIntegrator {
                       Vertx vertx,
                       String clientPrefix,
                       Integer maxMessageSize,
-                      Integer inflightQueueSize) {
+                      Integer inflightQueueSize,
+                      Integer workerSize) {
         this.topicFilter = getTopicFilter(groupName, topicFilter);
         this.userName = userName;
         this.password = password;
@@ -54,23 +56,23 @@ public class Integrator implements IIntegrator {
         this.cleanSession = cleanSession;
         this.host = host;
         this.port = port;
-        this.producer = producer;
         this.vertx = vertx == null ? Vertx.vertx() : vertx;
         this.clientPrefix = clientPrefix == null ? DEFAULT_CLIENT_PREFIX : clientPrefix;
         this.maxMessageSize = maxMessageSize == null ? DEFAULT_MAX_MESSAGE_SIZE : maxMessageSize;
         this.inflightQueueSize = inflightQueueSize == null ? DEFAULT_INFLIGHT_QUEUE_SIZE : inflightQueueSize;
-        initClients();
+        this.delegator = new Delegator(producer,
+                workerSize == null ? Math.max(2, Runtime.getRuntime().availableProcessors() / 4) : workerSize);
+        this.emitter.doOnComplete(delegator::close)
+                .subscribe(delegator::produce);
     }
 
     @Override
     public void start() {
-        emitter.doOnComplete(producer::close)
-                .subscribe(producer::produce);
+        initClients();
     }
 
     @Override
     public void close() {
-        producer.close();
         closeClients().thenAccept(v -> {
             clients.clear();
             emitter.onComplete();
@@ -83,24 +85,41 @@ public class Integrator implements IIntegrator {
     }
 
     private void initClients() {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (int idx = 0; idx < clientNum; idx++) {
-            MqttClientOptions options = getMqttClientOptions(idx);
-            MqttClient client = MqttClient.create(vertx, options);
-            client.connect(port, host, connAck -> {
-                if (connAck.failed()) {
-                    log.error("clientId: {} connect to BifroMQ failed: ", client.clientId(), connAck.cause());
-                }else {
-                    client.publishHandler(this::handlePublishedMsg);
-                    client.subscribe(topicFilter, 1, event -> {
-                        if (event.failed()) {
-                            log.error("clientId: {} subscribe topicFilter: {} failed: ", event.cause());
-                        }else {
-                            clients.add(client);
-                        }
-                    });
-                }
+            EventLoop eventLoop = vertx.nettyEventLoopGroup().next();
+            int finalIdx = idx;
+            eventLoop.execute(() -> {
+                MqttClientOptions options = getMqttClientOptions(finalIdx);
+                MqttClient client = MqttClient.create(vertx, options);
+                CompletableFuture<Void> connectFuture = new CompletableFuture<>();
+                futures.add(connectFuture);
+                client.connect(port, host, connAck -> {
+                    if (connAck.failed()) {
+                        log.error("clientId: {} connect to BifroMQ failed: ", client.clientId(), connAck.cause());
+                    }else {
+                        client.publishHandler(this::handlePublishedMsg);
+                        client.subscribe(topicFilter, 1, event -> {
+                            if (event.failed()) {
+                                log.error("clientId: {} subscribe topicFilter: {} failed: ", event.cause());
+                                connectFuture.completeExceptionally(new RuntimeException("init client error"));
+                            }else {
+                                clients.add(client);
+                                connectFuture.complete(null);
+                            }
+                        });
+                    }
+                });
             });
         }
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .whenComplete((v,e) -> {
+                    if (e != null) {
+                        log.error("failed to init clients: ", e);
+                    }else {
+                        log.info("init clients ok, clientNum: {}", clientNum);
+                    }
+                });
     }
 
     private String getTopicFilter(String groupName, String actualTopicFilter) {
