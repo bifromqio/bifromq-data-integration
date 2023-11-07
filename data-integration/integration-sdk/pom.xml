@@ -37,6 +37,11 @@
             <artifactId>rxjava</artifactId>
             <version>${rxjava3.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>${micrometer.core.version}</version>
+        </dependency>
     </dependencies>
 
 

@@ -6,7 +6,7 @@ import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Delegator implements IProducer {
+class Delegator implements IProducer {
     private final IProducer delegator;
     private final Executor ioExecutor;
 
