@@ -74,7 +74,7 @@ fi
 
 eval JVM_GC=("$JVM_GC_OPTS")
 # Memory options
-JVM_HEAP_OPTS="-Xms2G -Xmx4G"
+JVM_HEAP_OPTS="-Xms8G -Xmx16G"
 
 if [ "x$FOREGROUND_MODE" = "xtrue" ]; then
   exec "$JAVA" $JVM_HEAP_OPTS $JVM_PERF_OPTS "${JVM_GC[@]}" $EXTRA_JVM_OPTS \

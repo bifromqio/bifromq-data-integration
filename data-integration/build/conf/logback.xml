@@ -4,8 +4,6 @@
     <property name="logDir" value="${LOG_DIR:-${user.dir}}"/>
     <property name="logPattern"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:- } [%t] --- %-40.40logger{39}[%F:%L] %m%n"/>
-    <property name="eventPattern"
-              value="%d{yyyy-MM-dd HH:mm:ss.SSS} --- %m%n"/>
 
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -96,7 +94,7 @@
         </filter>
     </appender>
 
-    <logger name="bifromq.bridge.*" level="INFO" additivity="false">
+    <logger name="bifromq.bridge" level="INFO" additivity="false">
         <appender-ref ref="traceLogFile"/>
         <appender-ref ref="debugLogFile"/>
         <appender-ref ref="infoLogFile"/>
@@ -105,10 +103,6 @@
     </logger>
 
     <root level="INFO">
-        <appender-ref ref="traceLogFile"/>
-        <appender-ref ref="debugLogFile"/>
-        <appender-ref ref="infoLogFile"/>
-        <appender-ref ref="warnLogFile"/>
-        <appender-ref ref="errorLogFile"/>
+        <appender-ref ref="stdout"/>
     </root>
 </configuration>

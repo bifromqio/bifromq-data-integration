@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -27,7 +28,7 @@ public class Integrator implements IIntegrator {
     private int port;
     private String clientPrefix;
     private Vertx vertx;
-    private List<MqttClient> clients = new ArrayList<>();
+    private List<MqttClient> clients = new LinkedList<>();
     private final PublishSubject<IntegratedMessage> emitter = PublishSubject.create();
     private final IProducer delegator;
     private final String DEFAULT_CLIENT_PREFIX = "data-integrator-";
@@ -48,7 +49,8 @@ public class Integrator implements IIntegrator {
                       String clientPrefix,
                       Integer maxMessageSize,
                       Integer inflightQueueSize,
-                      Integer workerSize) {
+                      Integer workerSize,
+                      Integer bufferSize) {
         this.topicFilter = getTopicFilter(groupName, topicFilter);
         this.userName = userName;
         this.password = password;
@@ -61,7 +63,8 @@ public class Integrator implements IIntegrator {
         this.maxMessageSize = maxMessageSize == null ? DEFAULT_MAX_MESSAGE_SIZE : maxMessageSize;
         this.inflightQueueSize = inflightQueueSize == null ? DEFAULT_INFLIGHT_QUEUE_SIZE : inflightQueueSize;
         this.delegator = new Delegator(producer,
-                workerSize == null ? Math.max(2, Runtime.getRuntime().availableProcessors() / 4) : workerSize);
+                workerSize == null ? Math.max(2, Runtime.getRuntime().availableProcessors() / 4) : workerSize,
+                bufferSize == null ? 0 : bufferSize);
         this.emitter.doOnComplete(delegator::close)
                 .subscribe(delegator::produce);
     }

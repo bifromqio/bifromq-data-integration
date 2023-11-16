@@ -1,9 +1,9 @@
 integratorConfig:
-  clientNum: 200
-  topicFilter: test/kafka/#
-  host: 192.168.64.40
-  port: 8087
+  clientNum: ${CLIENT_NUM}
+  topicFilter: ${TOPIC_FILTER}
+  host: ${HOST}
+  port: ${PORT}
 producerConfig:
   type: Kafka # Kafka or Dummy
   kafkaConfig:
-    bootstrapServers: 192.168.64.15:9092,192.168.64.38:9092,192.168.64.39:9092
+    bootstrapServers: ${SERVERS}

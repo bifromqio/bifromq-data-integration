@@ -15,7 +15,6 @@ import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
-import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.plugins.RxJavaPlugins;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -38,7 +37,7 @@ public class Starter {
     }
     private static final String PROMETHEUS_PORT = "prometheus.port";
     private static final String PROMETHEUS_CONTEXT = "prometheus.context";
-    private PrometheusMeterRegistry registry;
+    private PrometheusMeterRegistry registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
     private HttpServer prometheusExportServer;
     private Thread serverThread;
     private Integrator integrator;
@@ -92,7 +91,7 @@ public class Starter {
         IntegratorConfig integratorConfig = bridgeConfig.getIntegratorConfig();
         VertxOptions vertxOptions = new VertxOptions();
         vertxOptions.setEventLoopPoolSize(Runtime.getRuntime().availableProcessors() * 2);
-        vertxOptions.setWorkerPoolSize(Runtime.getRuntime().availableProcessors() * 2);
+        vertxOptions.setWorkerPoolSize(integratorConfig.getEventLoopSize());
         vertxOptions.setBlockedThreadCheckInterval(4);
         vertxOptions.setBlockedThreadCheckIntervalUnit(TimeUnit.MINUTES);
         this.integrator = Integrator.builder()
@@ -105,6 +104,7 @@ public class Starter {
                 .topicFilter(integratorConfig.getTopicFilter())
                 .userName(integratorConfig.getUsername())
                 .password(integratorConfig.getPassword())
+                .workerSize(integratorConfig.getWorkerSize())
                 .vertx(Vertx.vertx(vertxOptions))
                 .build();
     }
@@ -119,7 +119,6 @@ public class Starter {
         new ProcessorMetrics().bindTo(Metrics.globalRegistry);
         new LogbackMetrics().bindTo(Metrics.globalRegistry);
 
-        this.registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
         registry.config().meterFilter(new MeterFilter() {
             @Override
             public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {

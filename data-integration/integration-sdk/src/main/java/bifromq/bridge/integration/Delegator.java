@@ -10,12 +10,18 @@ class Delegator implements IProducer {
     private final IProducer delegator;
     private final Executor ioExecutor;
 
-    public Delegator(IProducer delegator, int workerThreads) {
+    public Delegator(IProducer delegator, int workerThreads, int bufferSize) {
         this.delegator = delegator;
+        BlockingQueue<Runnable> queue;
+        if (bufferSize <= 0) {
+            queue = new LinkedTransferQueue<>();
+        }else {
+            queue = new LinkedBlockingQueue<>(bufferSize);
+        }
         this.ioExecutor = ExecutorServiceMetrics.monitor(Metrics.globalRegistry,
                 new ThreadPoolExecutor(workerThreads,
                         workerThreads, 0L,
-                        TimeUnit.MILLISECONDS, new LinkedTransferQueue<>(),
+                        TimeUnit.MILLISECONDS, queue,
                         getThreadFactory()), "bridge-executor");
     }
 

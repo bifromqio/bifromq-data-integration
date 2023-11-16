@@ -42,6 +42,11 @@
             <artifactId>micrometer-core</artifactId>
             <version>${micrometer.core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jctools</groupId>
+            <artifactId>jctools-core</artifactId>
+            <version>4.0.1</version>
+        </dependency>
     </dependencies>
 
 

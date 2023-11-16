@@ -9,6 +9,8 @@ public class IntegratorConfig {
     private String password = "dev";
     private boolean cleanSession = true;
     private int clientNum = 10;
+    private int workerSize = Runtime.getRuntime().availableProcessors() * 4;
+    private int eventLoopSize = Runtime.getRuntime().availableProcessors() * 2;
     private String topicFilter;
     private String host;
     private int port;
