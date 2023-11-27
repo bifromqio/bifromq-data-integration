@@ -6,11 +6,11 @@ import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-class Delegator implements IProducer {
+class ProducerWrapper implements IProducer {
     private final IProducer delegator;
     private final Executor ioExecutor;
 
-    public Delegator(IProducer delegator, int workerThreads, int bufferSize) {
+    public ProducerWrapper(IProducer delegator, int workerThreads, int bufferSize) {
         this.delegator = delegator;
         BlockingQueue<Runnable> queue;
         if (bufferSize <= 0) {
@@ -22,7 +22,7 @@ class Delegator implements IProducer {
                 new ThreadPoolExecutor(workerThreads,
                         workerThreads, 0L,
                         TimeUnit.MILLISECONDS, queue,
-                        getThreadFactory()), "bridge-executor");
+                        getThreadFactory()), "bifromq-bridge-executor");
     }
 
     private ThreadFactory getThreadFactory() {
@@ -32,7 +32,7 @@ class Delegator implements IProducer {
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
-                thread.setName("bridge-executor-" + threadCount.incrementAndGet());
+                thread.setName("bifromq-bridge-executor-" + threadCount.incrementAndGet());
                 return thread;
             }
         };

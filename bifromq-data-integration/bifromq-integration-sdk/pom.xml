@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>bifromq.integration</groupId>
-        <artifactId>data-integration</artifactId>
+        <artifactId>bifromq-data-integration</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>integration-sdk</artifactId>
+    <artifactId>bifromq-integration-sdk</artifactId>
 
     <dependencies>
         <dependency>
@@ -41,11 +41,6 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
             <version>${micrometer.core.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jctools</groupId>
-            <artifactId>jctools-core</artifactId>
-            <version>4.0.1</version>
         </dependency>
     </dependencies>
 

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>bifromq.integration</groupId>
-        <artifactId>data-integration</artifactId>
+        <artifactId>bifromq-data-integration</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>bifromq.integration</groupId>
-            <artifactId>integration-sdk</artifactId>
+            <artifactId>bifromq-integration-sdk</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -61,7 +61,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
-                    <finalName>bridge-service-${project.parent.version}</finalName>
+                    <finalName>bifromq-bridge-service-${project.parent.version}</finalName>
                     <archive>
                         <manifest>
                             <mainClass>bifromq.bridge.service.Starter</mainClass>

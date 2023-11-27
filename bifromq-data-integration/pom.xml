@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>bifromq.integration</groupId>
-    <artifactId>data-integration</artifactId>
+    <artifactId>bifromq-data-integration</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>build</module>
-        <module>integration-sdk</module>
+        <module>bifromq-integration-sdk</module>
     </modules>
 
     <properties>
@@ -38,16 +38,6 @@
         <commons.cli.version>1.5.0</commons.cli.version>
         <micrometer.core.version>1.11.1</micrometer.core.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>bifromq.integration</groupId>
-                <artifactId>data-integration</artifactId>
-                <version>${project.parent}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <pluginManagement>

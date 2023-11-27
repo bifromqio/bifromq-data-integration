@@ -62,7 +62,7 @@ public class Integrator implements IIntegrator {
         this.clientPrefix = clientPrefix == null ? DEFAULT_CLIENT_PREFIX : clientPrefix;
         this.maxMessageSize = maxMessageSize == null ? DEFAULT_MAX_MESSAGE_SIZE : maxMessageSize;
         this.inflightQueueSize = inflightQueueSize == null ? DEFAULT_INFLIGHT_QUEUE_SIZE : inflightQueueSize;
-        this.delegator = new Delegator(producer,
+        this.delegator = new ProducerWrapper(producer,
                 workerSize == null ? Math.max(2, Runtime.getRuntime().availableProcessors() / 4) : workerSize,
                 bufferSize == null ? 0 : bufferSize);
         this.emitter.doOnComplete(delegator::close)
