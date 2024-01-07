@@ -25,7 +25,7 @@ The overarching architecture is depicted in the accompanying figure.
 
 Note: 
 * The data-integration service is deployed in the same machine with BifroMQ. However, in production scenarios, this 
-* co-location is not necessary.
+  co-location is not necessary.
 * The topic transition from BifroMQ to Kafka is in a dummy way, i.e. no extra transition is done.
 * The partitionCount is 12 and replicationFactor is 1 in Kafka cluster.
 
