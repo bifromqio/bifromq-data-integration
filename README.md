@@ -19,9 +19,9 @@ The overarching architecture is depicted in the accompanying figure.
 ### Test Environment
 | Service Name     | Node Num | Version | OS Version     | CPU Resource | Memory Resource |
 |------------------|----------|---------|----------------|--------------|-----------------|
-| BifroMQ          | 1        | 2.0.0   | Centos7.8      | 64           | 128             |
-| Kafka Cluster    | 3        | 2.3.0   | Centos7.8      | 16           | 32              | 
-| Clients          | 1        |         | Centos7.8      | 8            | 16              | 
+| BifroMQ          | 1        | 2.0.0   | Centos7.8      | 64           | 128 GB          |
+| Kafka Cluster    | 3        | 2.3.0   | Centos7.8      | 16           | 32  GB          | 
+| Clients          | 1        |         | Centos7.8      | 8            | 16  GB          | 
 
 Note: 
 * The data-integration service is deployed in the same machine with BifroMQ. However, in production scenarios, this 
