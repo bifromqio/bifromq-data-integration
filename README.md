@@ -52,7 +52,7 @@ overwhelmed, it's essential to increase the number of receivers beyond BifroMQ's
 limit. This can be achieved by implementing the ISettingProvider interface in a [plugin way](https://bifromq.io/docs/2.0.0/plugin/plugin_practice/)
 to override default settings.
 
-### Increase the default
+### Increase the default channel buffer
 To reduce traffic congestion from BifroMQ to receivers, BifroMQ actively drops some messages when the receiver's 
 available channel buffer is limited. In scenarios with a massive influx of messages, the buffer size can be increased by 
 modifying the BifroMQ parameter MaxUserPayloadBytes. The code snippet below provides an example of how to implement 
