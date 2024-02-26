@@ -15,7 +15,7 @@
         <repository>
             <id>github</id>
             <name>GitHub Packages</name>
-            <url>https://maven.pkg.github.com/octocat/Gujiawei-Edinburgh/bifromq-data-integration</url>
+            <url>https://maven.pkg.github.com/octocat/Gujiawei-Edinburgh/bifromq-data-integration-sdk</url>
         </repository>
     </distributionManagement>
 
