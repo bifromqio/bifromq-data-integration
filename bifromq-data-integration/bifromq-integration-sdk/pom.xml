@@ -11,7 +11,16 @@
 
     <artifactId>bifromq-integration-sdk</artifactId>
 
-    <dependencies>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/octocat/Gujiawei-Edinburgh/bifromq-data-integration</url>
+        </repository>
+    </distributionManagement>
+
+
+<dependencies>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
