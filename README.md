@@ -13,7 +13,7 @@ downstream systems. Additionally, a practical example demonstrating BifrMQ-to-Ka
 
 The overarching architecture is depicted in the accompanying figure.
 
-<img src="bifromq-data-integration/blog/img/integration-arch.png" width="600" height="300">
+<img src="blog/img/integration-arch.png" width="600" height="300">
 
 ## Stress Test
 ### Test Environment
@@ -37,13 +37,13 @@ on monitoring BifroMQ's ingress and egress rate, message arrival rate in Kafka, 
 
 ### Test Results
 ### Ingress and Egress Rate
-<img src="bifromq-data-integration/blog/img/ingress-and-egress.png" width="600">
+<img src="blog/img/ingress-and-egress.png" width="600">
 
 ### Resources Usage
-<img src="bifromq-data-integration/blog/img/resources.png" width="600">
+<img src="blog/img/resources.png" width="600">
 
 ### Number of Messages Transfers
-<img src="bifromq-data-integration/blog/img/msg-count.png" width="600">
+<img src="blog/img/msg-count.png" width="600">
 
 ### BifroMQ Parameters Tuning
 ### Increase the shared group size
