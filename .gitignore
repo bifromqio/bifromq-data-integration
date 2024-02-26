@@ -1,0 +1,15 @@
+# maven ignore
+target/
+output/
+# idea ignore
+.idea/
+.run/
+*.ipr
+*.iml
+*.iws
+# temp ignore
+*.log
+# system ignore
+.DS_Store
+Thumbs.db
+
