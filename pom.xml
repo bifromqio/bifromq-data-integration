@@ -75,5 +75,13 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/octocat/bifromqio/bifromq-data-integration</url>
+        </repository>
+    </distributionManagement>
+
 
 </project>
