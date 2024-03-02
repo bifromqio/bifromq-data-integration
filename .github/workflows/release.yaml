@@ -1,13 +1,12 @@
 name: Publish package to GitHub Packages
 on:
-  push:
-    branches:
-      - release-v1	
+  release:
+    types: [created]
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
