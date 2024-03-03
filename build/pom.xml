@@ -6,7 +6,7 @@
     <parent>
         <groupId>bifromq.integration</groupId>
         <artifactId>bifromq-data-integration</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>build</artifactId>
