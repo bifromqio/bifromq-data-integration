@@ -11,9 +11,9 @@ tasks, which helps maintains the lightweight nature of BifroMQ.
 In this repository, an SDK has been meticulously crafted, enabling users to implement custom transition logic for their 
 downstream systems. Additionally, a practical example demonstrating BifrMQ-to-Kafka has been provided.
 
-The overarching architecture is depicted in the accompanying figure.
+**NOTE**: This SDK supports MQTT 3.x only
 
-<img src="blog/img/integration-arch.png" width="600" height="300">
+For MQTT 5.x support and data-integration scenarios, we recommend [BifroRE](https://github.com/bifromqio/bifrore), a SQL-based rule engine derived from this repository that supports both MQTT 3.x and MQTT 5.x.
 
 ## Stress Test
 ### Test Environment
